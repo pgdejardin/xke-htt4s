@@ -2,7 +2,9 @@ package fr.xebia.http4s
 
 import cats.effect._
 import cats.implicits._
+import fr.xebia.http4s.domain.book.{BookService, BookValidationInterpreter}
 import fr.xebia.http4s.infrastructure.endpoint.BookEndpoints
+import fr.xebia.http4s.infrastructure.repository.inmemory.BookRepositoryInMemoryInterpreter
 import org.http4s.HttpRoutes
 import org.http4s.implicits._
 import org.http4s.server.blaze.BlazeServerBuilder
@@ -14,12 +16,14 @@ object Server extends IOApp {
   def createServer[F[_]: ContextShift: ConcurrentEffect: Timer]: Resource[F, H4Server[F]] =
     for {
 //      conf <- Resource.liftF(parser.decodePathF[F, LibraryConfig]("library"))
-//      bookRepo =
-//      bookService = BookService[F](bookRepo, bookValidation)
-//      httpApp = Router("/" -> booksRoutes).orNotFound
+      bookRepo <- BookRepositoryInMemoryInterpreter[F]()
+      bookValidation = BookValidationInterpreter[F](bookRepo)
+      bookService = BookService[F](bookRepo, bookValidation)
+      services = BookEndpoints.endpoints[F](bookService)
+      httpApp = Router("/" -> services).orNotFound
       server <- BlazeServerBuilder[F]
         .bindHttp(8080, "0.0.0.0")
-        .withHttpApp(Router("/" -> booksRoutes).orNotFound)
+        .withHttpApp(httpApp)
         .resource
     } yield server
 
