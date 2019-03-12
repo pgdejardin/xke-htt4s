@@ -10,8 +10,8 @@ class BookValidationInterpreter[F[_]: Monad](repository: BookRepositoryAlgebra[F
 
   def doesNotExist(book: Book): EitherT[F, BookAlreadyExistsError, Unit] = EitherT {
     repository.findByTitleAndAuthorId(book.title, book.author.id).map { matches =>
-      if (matches.isEmpty) {
-        Right()
+      if (matches.isDefined) {
+        Right(())
       } else {
         Left(BookAlreadyExistsError(book))
       }

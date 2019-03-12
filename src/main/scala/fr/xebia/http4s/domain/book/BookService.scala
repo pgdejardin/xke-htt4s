@@ -4,14 +4,14 @@ import java.util.UUID
 
 import cats.Monad
 import cats.data.EitherT
-import fr.xebia.http4s.domain.BookNotFoundError
+import fr.xebia.http4s.domain.{BookAlreadyExistsError, BookNotFoundError}
 
 import scala.language.higherKinds
 
 class BookService[F[_]](repository: BookRepositoryAlgebra[F], validation: BookValidationAlgebra[F]) {
   import cats.syntax.all._
 
-  def create(book: Book)(implicit monad: Monad[F]): EitherT[F, BookValidationAlgebra, Book] =
+  def create(book: Book)(implicit monad: Monad[F]): EitherT[F, BookAlreadyExistsError, Book] =
     for {
       _ <- validation.doesNotExist(book)
       saved <- EitherT.liftF(repository.create(book))

@@ -1,6 +1,8 @@
 package fr.xebia.http4s.domain.book
 import java.util.UUID
 
+import scala.language.higherKinds
+
 trait BookRepositoryAlgebra[F[_]] {
 
   def create(book: Book): F[Book]

@@ -1,10 +1,9 @@
 package fr.xebia.http4s.infrastructure.endpoint
 
 import cats.effect.Sync
-import cats.implicits._
 import fr.xebia.http4s.domain.BookAlreadyExistsError
+import fr.xebia.http4s.domain.author.Author
 import fr.xebia.http4s.domain.book.{Book, BookService}
-import io.circe.Json
 import io.circe.generic.auto._
 import io.circe.syntax._
 import org.http4s.circe._
@@ -14,8 +13,10 @@ import org.http4s.{EntityDecoder, HttpRoutes}
 import scala.language.higherKinds
 
 class BookEndpoints[F[_]: Sync] extends Http4sDsl[F] {
+  import cats.implicits._
 
   implicit val bookDecoder: EntityDecoder[F, Book] = jsonOf[F, Book]
+  implicit val authorDecoder: EntityDecoder[F, Author] = jsonOf[F, Author]
 
   private def createBookEndpoint(bookService: BookService[F]): HttpRoutes[F] =
     HttpRoutes.of[F] {

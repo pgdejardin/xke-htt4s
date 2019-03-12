@@ -1,7 +1,7 @@
 package fr.xebia.http4s.infrastructure.repository.inmemory
 import java.util.UUID
 
-import cats.Applicative
+import cats._
 import fr.xebia.http4s.domain.book.{Book, BookRepositoryAlgebra}
 
 class BookRepositoryInMemoryInterpreter[F[_]: Applicative] extends BookRepositoryAlgebra[F] {
@@ -10,7 +10,7 @@ class BookRepositoryInMemoryInterpreter[F[_]: Applicative] extends BookRepositor
   override def update(pet: Book): F[Option[Book]] = ???
   override def get(isbn: UUID): F[Option[Book]] = ???
   override def delete(isbn: UUID): F[Option[Book]] = ???
-  override def findByTitleAndAuthorId(title: String, authorId: Long): F[Option[Book]] = ???
+  override def findByTitleAndAuthorId(title: String, authorId: UUID): F[Option[Book]] = ???
 }
 
 object BookRepositoryInMemoryInterpreter {

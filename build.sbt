@@ -3,6 +3,7 @@ val Specs2Version = "4.1.0"
 val LogbackVersion = "1.2.3"
 val CirceVersion = "0.11.1"
 val CirceConfigVersion = "0.6.1"
+val CatsVersion = "1.6.0"
 
 lazy val root = (project in file("."))
   .settings(
@@ -11,7 +12,12 @@ lazy val root = (project in file("."))
     version := "0.0.1-SNAPSHOT",
     scalaVersion := "2.12.8",
     libraryDependencies ++= Seq(
+      "org.typelevel" %% "cats-core" % CatsVersion,
       "io.circe" %% "circe-generic" % CirceVersion,
+      "io.circe" %% "circe-literal" % CirceVersion,
+      "io.circe" %% "circe-generic-extras" % CirceVersion,
+      "io.circe" %% "circe-parser" % CirceVersion,
+      "io.circe" %% "circe-java8" % CirceVersion,
       "io.circe" %% "circe-config" % CirceConfigVersion,
       "org.http4s" %% "http4s-blaze-server" % Http4sVersion,
       "org.http4s" %% "http4s-circe" % Http4sVersion,
