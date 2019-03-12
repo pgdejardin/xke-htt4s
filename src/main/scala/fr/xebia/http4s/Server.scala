@@ -21,7 +21,7 @@ object Server extends IOApp {
       services = BookEndpoints.endpoints[F](bookService)
       httpApp = Router("/" -> services).orNotFound
       server <- BlazeServerBuilder[F]
-        .bindHttp(8080, "0.0.0.0")
+        .bindHttp(conf.server.port, conf.server.host)
         .withHttpApp(httpApp)
         .resource
     } yield server

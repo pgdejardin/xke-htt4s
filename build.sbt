@@ -4,6 +4,7 @@ val LogbackVersion = "1.2.3"
 val CirceVersion = "0.11.1"
 val CirceConfigVersion = "0.6.1"
 val CatsVersion = "1.6.0"
+val H2Version = "1.4.198"
 
 lazy val root = (project in file("."))
   .settings(
@@ -14,14 +15,12 @@ lazy val root = (project in file("."))
     libraryDependencies ++= Seq(
       "org.typelevel" %% "cats-core" % CatsVersion,
       "io.circe" %% "circe-generic" % CirceVersion,
-      "io.circe" %% "circe-literal" % CirceVersion,
-      "io.circe" %% "circe-generic-extras" % CirceVersion,
       "io.circe" %% "circe-parser" % CirceVersion,
-      "io.circe" %% "circe-java8" % CirceVersion,
       "io.circe" %% "circe-config" % CirceConfigVersion,
       "org.http4s" %% "http4s-blaze-server" % Http4sVersion,
       "org.http4s" %% "http4s-circe" % Http4sVersion,
       "org.http4s" %% "http4s-dsl" % Http4sVersion,
+      "com.h2database" % "h2" % H2Version,
       "org.specs2" %% "specs2-core" % Specs2Version % "test",
       "ch.qos.logback" % "logback-classic" % LogbackVersion
     ),
