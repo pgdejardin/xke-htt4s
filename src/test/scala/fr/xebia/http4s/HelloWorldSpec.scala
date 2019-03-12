@@ -1,6 +1,7 @@
 package fr.xebia.http4s
 
 import cats.effect.IO
+import fr.xebia.http4s.infrastructure.endpoint.BookEndpoints
 import org.http4s._
 import org.http4s.implicits._
 import org.specs2.matcher.MatchResult
@@ -18,7 +19,7 @@ class HelloWorldSpec extends org.specs2.mutable.Specification {
 
   private[this] val retHelloWorld: Response[IO] = {
     val getHW = Request[IO](Method.GET, Uri.uri("/hello/world"))
-    new HelloWorldRoutes[IO].routes.orNotFound(getHW).unsafeRunSync()
+    new BookEndpoints[IO].routes.orNotFound(getHW).unsafeRunSync()
   }
 
   private[this] def uriReturns200(): MatchResult[Status] =
