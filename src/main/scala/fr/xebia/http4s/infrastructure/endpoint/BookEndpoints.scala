@@ -35,12 +35,6 @@ class BookEndpoints[F[_]: Sync] extends Http4sDsl[F] {
 
   def endpoints(bookService: BookService[F]): HttpRoutes[F] =
     createBookEndpoint(bookService)
-
-  val routes: HttpRoutes[F] =
-    HttpRoutes.of[F] {
-      case GET -> Root / "hello" / name =>
-        Ok(Json.obj("message" -> Json.fromString(s"Hello, $name")))
-    }
 }
 
 object BookEndpoints {
