@@ -1,14 +1,14 @@
 package fr.xebia.http4s.infrastructure.endpoint
 
 import cats.effect.Sync
-import fr.xebia.http4s.domain.BookAlreadyExistsError
+import fr.xebia.http4s.domain.{BookAlreadyExistsError, BookNotFoundError}
 import fr.xebia.http4s.domain.author.Author
 import fr.xebia.http4s.domain.book.{Book, BookService}
 import io.circe.generic.auto._
 import io.circe.syntax._
+import org.http4s.{EntityDecoder, HttpRoutes}
 import org.http4s.circe._
 import org.http4s.dsl.Http4sDsl
-import org.http4s.{EntityDecoder, HttpRoutes}
 
 import scala.language.higherKinds
 
@@ -34,17 +34,26 @@ class BookEndpoints[F[_]: Sync] extends Http4sDsl[F] {
         }
     }
 
+  private def getBookEndpoint(bookService: BookService[F]): HttpRoutes[F] =
+    HttpRoutes.of[F] {
+      case GET -> Root / "books" / UUIDVar(isbn) =>
+        bookService.getABook(isbn).value.flatMap {
+          case Right(found)            => Ok(found.asJson)
+          case Left(BookNotFoundError) => NotFound("The book was not found")
+        }
+    }
+
   private def listBooksEndpoint(bookService: BookService[F]): HttpRoutes[F] =
     HttpRoutes.of[F] {
       case GET -> Root / "books" =>
         for {
-          retrieved <- bookService.getAllBooksInLibrary()
+          retrieved <- bookService.getAllBooksInLibrary
           response <- Ok(retrieved.asJson)
         } yield response
     }
 
   def endpoints(bookService: BookService[F]): HttpRoutes[F] =
-    createBookEndpoint(bookService) <+> listBooksEndpoint(bookService)
+    createBookEndpoint(bookService) <+> listBooksEndpoint(bookService) <+> getBookEndpoint(bookService)
 }
 
 object BookEndpoints {

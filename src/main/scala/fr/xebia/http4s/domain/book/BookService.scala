@@ -19,8 +19,7 @@ class BookService[F[_]](repository: BookRepositoryAlgebra[F], validation: BookVa
   def getABook(isbn: UUID)(implicit M: Monad[F]): EitherT[F, BookNotFoundError.type, Book] =
     EitherT.fromOptionF(repository.get(isbn), BookNotFoundError)
 
-  def getAllBooksInLibrary(): F[List[Book]] =
-    repository.list()
+  def getAllBooksInLibrary: F[List[Book]] = repository.list()
 }
 
 object BookService {
