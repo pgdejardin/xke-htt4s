@@ -1,6 +1,7 @@
 package fr.xebia.http4s.infrastructure.endpoint
 
 import cats.effect.IO
+import cats.kernel.Comparison.GreaterThan
 import fr.xebia.http4s.BookStoreArbitraries
 import fr.xebia.http4s.domain.book.{Book, BookService, BookValidationInterpreter}
 import fr.xebia.http4s.infrastructure.repository.inmemory.BookRepositoryInMemoryInterpreter
@@ -23,6 +24,7 @@ class BookEndpointsSpec
 
   implicit val bookEncoder: EntityEncoder[IO, Book] = jsonEncoderOf
   implicit val bookDecoder: EntityDecoder[IO, Book] = jsonOf
+  implicit val listBookDecoder: EntityDecoder[IO, List[Book]] = jsonOf
 
   test("Add book to Library") {
     val bookRepo = BookRepositoryInMemoryInterpreter[IO]()
@@ -60,6 +62,27 @@ class BookEndpointsSpec
         responseBook.author shouldEqual book.author
         responseBook.description shouldEqual book.description
       }).unsafeRunSync
+    }
+  }
+
+  test("Get all books in Library") {
+    val bookRepo = BookRepositoryInMemoryInterpreter[IO]()
+    val bookValidation = BookValidationInterpreter[IO](bookRepo)
+    val bookService = BookService[IO](bookRepo, bookValidation)
+    val bookHttpService = BookEndpoints.endpoints[IO](bookService).orNotFound
+
+    forAll { book: Book =>
+      (for {
+        createRequest <- POST(book, Uri.uri("/books"))
+        _ <- bookHttpService.run(createRequest)
+        request <- GET(Uri.uri("/books"))
+        response <- bookHttpService.run(request)
+        responseList <- response.as[List[Book]]
+      } yield {
+        response.status shouldEqual Ok
+        assert(responseList.nonEmpty)
+      }).unsafeRunSync
+
     }
   }
 }
