@@ -23,7 +23,7 @@ class BookEndpoints[F[_]: Sync] extends Http4sDsl[F] {
       case req @ POST -> Root / "books" =>
         val action = for {
           book <- req.as[Book]
-          result <- bookService.create(book).value
+          result <- bookService.addToLibrary(book).value
         } yield result
 
         action.flatMap {
@@ -38,7 +38,7 @@ class BookEndpoints[F[_]: Sync] extends Http4sDsl[F] {
     HttpRoutes.of[F] {
       case GET -> Root / "books" =>
         for {
-          retrieved <- bookService.list()
+          retrieved <- bookService.getAllBooksInLibrary()
           response <- Ok(retrieved.asJson)
         } yield response
     }

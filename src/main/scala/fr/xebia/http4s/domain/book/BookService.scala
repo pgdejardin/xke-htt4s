@@ -10,16 +10,16 @@ import scala.language.higherKinds
 
 class BookService[F[_]](repository: BookRepositoryAlgebra[F], validation: BookValidationAlgebra[F]) {
 
-  def create(book: Book)(implicit monad: Monad[F]): EitherT[F, BookAlreadyExistsError, Book] =
+  def addToLibrary(book: Book)(implicit monad: Monad[F]): EitherT[F, BookAlreadyExistsError, Book] =
     for {
       _ <- validation.doesNotExist(book)
       saved <- EitherT.liftF(repository.create(book))
     } yield saved
 
-  def get(isbn: UUID)(implicit M: Monad[F]): EitherT[F, BookNotFoundError.type, Book] =
+  def getABook(isbn: UUID)(implicit M: Monad[F]): EitherT[F, BookNotFoundError.type, Book] =
     EitherT.fromOptionF(repository.get(isbn), BookNotFoundError)
 
-  def list(): F[List[Book]] =
+  def getAllBooksInLibrary(): F[List[Book]] =
     repository.list()
 }
 
