@@ -1,7 +1,6 @@
 package fr.xebia.http4s.infrastructure.endpoint
 
 import cats.effect.IO
-import cats.kernel.Comparison.GreaterThan
 import fr.xebia.http4s.BookStoreArbitraries
 import fr.xebia.http4s.domain.book.{Book, BookService, BookValidationInterpreter}
 import fr.xebia.http4s.infrastructure.repository.inmemory.BookRepositoryInMemoryInterpreter
