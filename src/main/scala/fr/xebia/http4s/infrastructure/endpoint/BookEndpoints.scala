@@ -34,8 +34,17 @@ class BookEndpoints[F[_]: Sync] extends Http4sDsl[F] {
         }
     }
 
+  private def listBooksEndpoint(bookService: BookService[F]): HttpRoutes[F] =
+    HttpRoutes.of[F] {
+      case GET -> Root / "books" =>
+        for {
+          retrieved <- bookService.list()
+          response <- Ok(retrieved.asJson)
+        } yield response
+    }
+
   def endpoints(bookService: BookService[F]): HttpRoutes[F] =
-    createBookEndpoint(bookService)
+    createBookEndpoint(bookService) <+> listBooksEndpoint(bookService)
 }
 
 object BookEndpoints {

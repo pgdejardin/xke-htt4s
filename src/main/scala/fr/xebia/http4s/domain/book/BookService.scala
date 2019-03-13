@@ -9,7 +9,6 @@ import fr.xebia.http4s.domain.{BookAlreadyExistsError, BookNotFoundError}
 import scala.language.higherKinds
 
 class BookService[F[_]](repository: BookRepositoryAlgebra[F], validation: BookValidationAlgebra[F]) {
-  import cats.syntax.all._
 
   def create(book: Book)(implicit monad: Monad[F]): EitherT[F, BookAlreadyExistsError, Book] =
     for {
@@ -19,6 +18,9 @@ class BookService[F[_]](repository: BookRepositoryAlgebra[F], validation: BookVa
 
   def get(isbn: UUID)(implicit M: Monad[F]): EitherT[F, BookNotFoundError.type, Book] =
     EitherT.fromOptionF(repository.get(isbn), BookNotFoundError)
+
+  def list(): F[List[Book]] =
+    repository.list()
 }
 
 object BookService {

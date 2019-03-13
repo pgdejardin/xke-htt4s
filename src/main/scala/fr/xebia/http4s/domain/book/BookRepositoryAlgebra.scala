@@ -11,6 +11,8 @@ trait BookRepositoryAlgebra[F[_]] {
 
   def get(isbn: UUID): F[Option[Book]]
 
+  def list(): F[List[Book]]
+
   def delete(isbn: UUID): F[Option[Book]]
 
   def findByTitleAndAuthorId(title: String, authorId: UUID): F[Option[Book]]
