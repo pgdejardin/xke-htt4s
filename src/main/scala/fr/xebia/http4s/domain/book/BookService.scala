@@ -3,6 +3,7 @@ package fr.xebia.http4s.domain.book
 import java.util.UUID
 
 import cats.Monad
+import cats.implicits._
 import cats.data.EitherT
 import fr.xebia.http4s.domain.{BookAlreadyExistsError, BookNotFoundError}
 
@@ -19,7 +20,14 @@ class BookService[F[_]](repository: BookRepositoryAlgebra[F], validation: BookVa
   def getABook(isbn: UUID)(implicit M: Monad[F]): EitherT[F, BookNotFoundError.type, Book] =
     EitherT.fromOptionF(repository.get(isbn), BookNotFoundError)
 
-  def getAllBooksInLibrary: F[List[Book]] = repository.list()
+  def getAllBooksInLibrary: F[List[Book]] =
+    repository.list()
+
+  def removeFromLibrary(isbn: UUID)(implicit monad: Monad[F]): EitherT[F, BookNotFoundError.type, Unit] =
+    for {
+      _ <- validation.exists(isbn.some)
+      _ <- EitherT.liftF(repository.delete(isbn).as(()))
+    } yield {}
 }
 
 object BookService {

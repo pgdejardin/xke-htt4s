@@ -2,7 +2,8 @@ package fr.xebia.http4s.infrastructure.repository.inmemory
 import java.util.UUID
 
 import cats._
-import cats.implicits._
+import cats.syntax.option._
+import cats.syntax.applicative._
 import fr.xebia.http4s.domain.author.Author
 import fr.xebia.http4s.domain.book.{Book, BookRepositoryAlgebra}
 
@@ -23,7 +24,7 @@ class BookRepositoryInMemoryInterpreter[F[_]: Applicative] extends BookRepositor
 
   override def list(): F[List[Book]] = cache.values.toList.sortBy(_.title).pure[F]
 
-  override def delete(isbn: UUID): F[Option[Book]] = ???
+  override def delete(isbn: UUID): F[Option[Book]] = cache.remove(isbn).pure[F]
 
   override def findByTitleAndAuthor(title: String, author: Author): F[Option[Book]] =
     cache.values.toList.find(book => book.title == title && book.author == author).pure[F]

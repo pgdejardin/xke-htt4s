@@ -34,7 +34,7 @@ class BookEndpoints[F[_]: Sync] extends Http4sDsl[F] {
         }
     }
 
-  private def getBookEndpoint(bookService: BookService[F]): HttpRoutes[F] =
+  private def getBookEndpoint(bookService: BookService[F]) =
     HttpRoutes.of[F] {
       case GET -> Root / "books" / UUIDVar(isbn) =>
         bookService.getABook(isbn).value.flatMap {
