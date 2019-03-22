@@ -13,12 +13,12 @@ I want to create from scratch a REST Api with Http4s.
 - Scala
 - Http4s
 - Cats
-- Doobie ? 
+- Doobie ?
  
-## Informations
+## Information
 
 Routes :
-[GET]  /books
-[GET]  /books/{id}
-[POST] /books
-[PUT]  /books/{id}
+1. [GET]  /books
+2. [GET]  /books/{id}
+3. [POST] /books
+4. [PUT]  /books/{id}
