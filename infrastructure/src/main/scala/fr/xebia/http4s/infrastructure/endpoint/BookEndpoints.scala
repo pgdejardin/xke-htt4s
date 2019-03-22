@@ -1,14 +1,14 @@
 package fr.xebia.http4s.infrastructure.endpoint
 
 import cats.effect.Sync
-import fr.xebia.http4s.domain.{BookAlreadyExistsError, BookNotFoundError}
 import fr.xebia.http4s.domain.author.Author
 import fr.xebia.http4s.domain.book.{Book, BookService}
+import fr.xebia.http4s.domain.{BookAlreadyExistsError, BookNotFoundError}
 import io.circe.generic.auto._
 import io.circe.syntax._
-import org.http4s.{EntityDecoder, HttpRoutes}
 import org.http4s.circe._
 import org.http4s.dsl.Http4sDsl
+import org.http4s.{EntityDecoder, HttpRoutes}
 
 import scala.language.higherKinds
 
@@ -52,8 +52,18 @@ class BookEndpoints[F[_]: Sync] extends Http4sDsl[F] {
         } yield response
     }
 
+  private def deleteBooks(bookService: BookService[F]) =
+    HttpRoutes.of[F] {
+      case DELETE -> Root / "books" / UUIDVar(isbn) =>
+        bookService.removeFromLibrary(isbn).value.flatMap {
+          case Right(_)                => Ok()
+          case Left(BookNotFoundError) => NotFound("The book was not found")
+        }
+    }
+
   def endpoints(bookService: BookService[F]): HttpRoutes[F] =
-    createBookEndpoint(bookService) <+> listBooksEndpoint(bookService) <+> getBookEndpoint(bookService)
+    createBookEndpoint(bookService) <+> listBooksEndpoint(bookService) <+> getBookEndpoint(bookService) <+>
+      deleteBooks(bookService)
 }
 
 object BookEndpoints {
