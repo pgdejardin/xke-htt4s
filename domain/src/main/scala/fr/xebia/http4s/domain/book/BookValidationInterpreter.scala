@@ -7,6 +7,8 @@ import cats.data.EitherT
 import cats.implicits._
 import fr.xebia.http4s.domain.{BookAlreadyExistsError, BookNotFoundError}
 
+import scala.language.higherKinds
+
 class BookValidationInterpreter[F[_]: Monad](repository: BookRepositoryAlgebra[F]) extends BookValidationAlgebra[F] {
 
   def doesNotExist(book: Book): EitherT[F, BookAlreadyExistsError, Unit] = EitherT {

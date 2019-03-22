@@ -1,9 +1,10 @@
-package fr.xebia.http4s.infrastructure.endpoint
+package fr.xke.http4s.infrastructure.endpoint
 
 import cats.effect.IO
-import fr.xebia.http4s.BookStoreArbitraries
 import fr.xebia.http4s.domain.book.{Book, BookService, BookValidationInterpreter}
+import fr.xebia.http4s.infrastructure.endpoint.BookEndpoints
 import fr.xebia.http4s.infrastructure.repository.inmemory.BookRepositoryInMemoryInterpreter
+import fr.xke.http4s.BookStoreArbitraries
 import io.circe.generic.auto._
 import org.http4s.{EntityDecoder, EntityEncoder, Uri}
 import org.http4s.circe.{jsonEncoderOf, jsonOf}

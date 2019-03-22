@@ -1,4 +1,4 @@
-package fr.xebia.http4s
+package fr.xke.http4s
 
 import fr.xebia.http4s.domain.author.Author
 import fr.xebia.http4s.domain.book.Book

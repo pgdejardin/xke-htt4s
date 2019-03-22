@@ -1,13 +1,15 @@
 package fr.xebia.http4s.infrastructure.repository.inmemory
+
 import java.util.UUID
 
 import cats._
-import cats.syntax.option._
 import cats.syntax.applicative._
+import cats.syntax.option._
 import fr.xebia.http4s.domain.author.Author
 import fr.xebia.http4s.domain.book.{Book, BookRepositoryAlgebra}
 
 import scala.collection.concurrent.TrieMap
+import scala.language.higherKinds
 
 class BookRepositoryInMemoryInterpreter[F[_]: Applicative] extends BookRepositoryAlgebra[F] {
 
