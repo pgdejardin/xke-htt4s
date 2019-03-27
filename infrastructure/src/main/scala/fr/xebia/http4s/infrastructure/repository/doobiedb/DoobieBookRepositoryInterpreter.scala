@@ -7,9 +7,9 @@ import cats.data.OptionT
 import cats.implicits._
 import doobie._
 import doobie.implicits._
-import fr.xebia.http4s.domain.book.{Book, BookRepositoryAlgebra}
 import doobie.postgres._
 import doobie.postgres.implicits._
+import fr.xebia.http4s.domain.book.{Book, BookRepositoryAlgebra}
 
 import scala.language.higherKinds
 
@@ -52,7 +52,7 @@ private object BookSQL {
 
   def select(isbn: UUID): Query0[Book] =
     sql"""
-         select isbn, author_id from book where isbn = $isbn
+         select title, isbn, description, author_id from book where isbn = $isbn
        """.query
 
   def delete(isbn: UUID): Update0 =
@@ -62,7 +62,7 @@ private object BookSQL {
 
   def selectByTitleAndAuthor(title: String, authorId: UUID): Query0[Book] =
     sql"""
-         select isbn, title, description, author_id
+         select title, isbn, description, author_id
          from book where title = $title
          and author_id = $authorId
        """.query
