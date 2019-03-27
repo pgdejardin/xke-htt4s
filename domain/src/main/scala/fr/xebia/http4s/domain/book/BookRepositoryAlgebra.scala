@@ -1,8 +1,6 @@
 package fr.xebia.http4s.domain.book
 import java.util.UUID
 
-import fr.xebia.http4s.domain.author.Author
-
 import scala.language.higherKinds
 
 trait BookRepositoryAlgebra[F[_]] {
@@ -15,5 +13,5 @@ trait BookRepositoryAlgebra[F[_]] {
 
   def delete(isbn: UUID): F[Option[Book]]
 
-  def findByTitleAndAuthor(title: String, author: Author): F[Option[Book]]
+  def findByTitleAndAuthor(title: String, authorId: UUID): F[Option[Book]]
 }

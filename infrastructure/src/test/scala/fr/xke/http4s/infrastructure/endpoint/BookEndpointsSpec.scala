@@ -3,7 +3,7 @@ package fr.xke.http4s.infrastructure.endpoint
 import cats.effect.IO
 import fr.xebia.http4s.domain.book.{Book, BookService, BookValidationInterpreter}
 import fr.xebia.http4s.infrastructure.endpoint.BookEndpoints
-import fr.xebia.http4s.infrastructure.repository.inmemory.BookRepositoryInMemoryInterpreter
+import fr.xebia.http4s.infrastructure.repository.inmemory.InMemoryBookRepositoryInterpreter
 import fr.xke.http4s.BookStoreArbitraries
 import io.circe.generic.auto._
 import org.http4s.{EntityDecoder, EntityEncoder, Uri}
@@ -27,7 +27,7 @@ class BookEndpointsSpec
   implicit val listBookDecoder: EntityDecoder[IO, List[Book]] = jsonOf
 
   test("Add book to Library") {
-    val bookRepo = BookRepositoryInMemoryInterpreter[IO]()
+    val bookRepo = InMemoryBookRepositoryInterpreter[IO]()
     val bookValidation = BookValidationInterpreter[IO](bookRepo)
     val bookService = BookService[IO](bookRepo, bookValidation)
     val bookHttpService = BookEndpoints.endpoints[IO](bookService).orNotFound
@@ -43,7 +43,7 @@ class BookEndpointsSpec
   }
 
   test("Get book from Library") {
-    val bookRepo = BookRepositoryInMemoryInterpreter[IO]()
+    val bookRepo = InMemoryBookRepositoryInterpreter[IO]()
     val bookValidation = BookValidationInterpreter[IO](bookRepo)
     val bookService = BookService[IO](bookRepo, bookValidation)
     val bookHttpService = BookEndpoints.endpoints[IO](bookService).orNotFound
@@ -59,14 +59,14 @@ class BookEndpointsSpec
       } yield {
         response.status shouldEqual Ok
         responseBook.title shouldEqual book.title
-        responseBook.author shouldEqual book.author
+        responseBook.authorId shouldEqual book.authorId
         responseBook.description shouldEqual book.description
       }).unsafeRunSync
     }
   }
 
   test("Get all books in Library") {
-    val bookRepo = BookRepositoryInMemoryInterpreter[IO]()
+    val bookRepo = InMemoryBookRepositoryInterpreter[IO]()
     val bookValidation = BookValidationInterpreter[IO](bookRepo)
     val bookService = BookService[IO](bookRepo, bookValidation)
     val bookHttpService = BookEndpoints.endpoints[IO](bookService).orNotFound

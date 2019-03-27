@@ -12,7 +12,7 @@ import scala.language.higherKinds
 class BookValidationInterpreter[F[_]: Monad](repository: BookRepositoryAlgebra[F]) extends BookValidationAlgebra[F] {
 
   def doesNotExist(book: Book): EitherT[F, BookAlreadyExistsError, Unit] = EitherT {
-    repository.findByTitleAndAuthor(book.title, book.author).map { matches =>
+    repository.findByTitleAndAuthor(book.title, book.authorId.get).map { matches =>
       if (matches.isEmpty) {
         Right(())
       } else {

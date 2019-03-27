@@ -1,4 +1,4 @@
-package fr.xebia.http4s
+package fr.xebia.http4s.infrastructure
 
 import io.circe.Decoder
 import io.circe.generic.semiauto._
