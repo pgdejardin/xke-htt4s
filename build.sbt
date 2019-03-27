@@ -7,7 +7,6 @@ val DoobieVersion = "0.6.0"
 val ScalaTestVersion = "3.0.6"
 val ScalaCheckVersion = "1.14.0"
 val FlywayVersion = "5.2.4"
-val PostgresVersion = "42.2.5"
 
 lazy val sharedDependencies = Seq(
   "ch.qos.logback" % "logback-classic" % LogbackVersion,
@@ -23,7 +22,6 @@ lazy val infraDependencies = Seq(
   "org.flywaydb" % "flyway-core" % FlywayVersion,
   "org.http4s" %% "http4s-circe" % Http4sVersion,
   "org.http4s" %% "http4s-dsl" % Http4sVersion,
-  "org.postgresql" %% "postgresql" % PostgresVersion,
   "org.tpolecat" %% "doobie-core" % DoobieVersion,
   "org.tpolecat" %% "doobie-hikari" % DoobieVersion,
   "org.tpolecat" %% "doobie-postgres" % DoobieVersion,

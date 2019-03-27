@@ -1,6 +1,7 @@
 package fr.xebia.http4s.infrastructure.repository.inmemory
 
 import java.util.UUID
+import java.util.UUID.randomUUID
 
 import cats._
 import cats.syntax.applicative._
@@ -15,7 +16,7 @@ class InMemoryBookRepositoryInterpreter[F[_]: Applicative] extends BookRepositor
   private val cache = new TrieMap[UUID, Book]
 
   override def create(book: Book): F[Book] = {
-    val isbn = UUID.randomUUID()
+    val isbn       = randomUUID()
     val bookToSave = book.copy(isbn = isbn.some)
     cache += (isbn -> book.copy(isbn = isbn.some))
     bookToSave.pure[F]
@@ -28,7 +29,7 @@ class InMemoryBookRepositoryInterpreter[F[_]: Applicative] extends BookRepositor
   override def delete(isbn: UUID): F[Option[Book]] = cache.remove(isbn).pure[F]
 
   override def findByTitleAndAuthor(title: String, authorId: UUID): F[Option[Book]] =
-    cache.values.toList.find(book => book.title == title && book.authorId == authorId).pure[F]
+    cache.values.toList.find(book => book.title == title && book.authorId.getOrElse(randomUUID()) == authorId).pure[F]
 }
 
 object InMemoryBookRepositoryInterpreter {
