@@ -1,12 +1,11 @@
 package fr.xke.http4s
 
-import java.util.UUID
-
+import cats.effect.IO
+import cats.syntax.option._
 import fr.xebia.http4s.domain.author.Author
 import fr.xebia.http4s.domain.book.Book
-import org.scalacheck.Arbitrary.arbitrary
+import io.chrisdavenport.fuuid.FUUID
 import org.scalacheck.{Arbitrary, Gen}
-import cats.syntax.option._
 
 trait BookStoreArbitraries {
 
@@ -19,16 +18,16 @@ trait BookStoreArbitraries {
     for {
       title       <- Gen.listOfN(bookTitleLength, Gen.alphaStr).map(_.mkString)
       description <- Gen.listOfN(bookDescriptionLength, Gen.alphaStr).map(_.mkString)
-      authorId    <- arbitrary[UUID]
-      isbn        <- Gen.option(Gen.uuid)
-    } yield Book(title, isbn, description, authorId.some)
+      authorId = FUUID.randomFUUID[IO].unsafeRunSync()
+      isbn     = FUUID.randomFUUID[IO].unsafeRunSync()
+    } yield Book(title, isbn.some, description, authorId)
   }
 
   implicit val author: Arbitrary[Author] = Arbitrary[Author] {
     for {
       firstName <- authorNameGen
       lastName  <- authorNameGen
-      id        <- arbitrary[UUID]
+      id = FUUID.randomFUUID[IO].unsafeRunSync()
     } yield Author(id, firstName, lastName)
   }
 }

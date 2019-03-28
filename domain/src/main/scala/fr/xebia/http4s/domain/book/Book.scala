@@ -1,10 +1,10 @@
 package fr.xebia.http4s.domain.book
 
-import java.util.UUID
+import io.chrisdavenport.fuuid.FUUID
 
 case class Book(
     title: String,
-    isbn: Option[UUID] = None,
+    isbn: Option[FUUID] = None,
     description: String,
-    authorId: Option[UUID] = None,
+    authorId: FUUID,
 )

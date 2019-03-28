@@ -5,12 +5,13 @@ import fr.xebia.http4s.domain.book.{Book, BookService, BookValidationInterpreter
 import fr.xebia.http4s.infrastructure.endpoint.BookEndpoints
 import fr.xebia.http4s.infrastructure.repository.inmemory.InMemoryBookRepositoryInterpreter
 import fr.xke.http4s.BookStoreArbitraries
+import io.chrisdavenport.fuuid.circe._
 import io.circe.generic.auto._
-import org.http4s.{EntityDecoder, EntityEncoder, Uri}
 import org.http4s.circe.{jsonEncoderOf, jsonOf}
 import org.http4s.client.dsl.Http4sClientDsl
 import org.http4s.dsl.Http4sDsl
 import org.http4s.implicits._
+import org.http4s.{EntityDecoder, EntityEncoder, Uri}
 import org.scalatest.{FunSuite, Matchers}
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 
@@ -22,19 +23,19 @@ class BookEndpointsSpec
     with Http4sDsl[IO]
     with Http4sClientDsl[IO] {
 
-  implicit val bookEncoder: EntityEncoder[IO, Book] = jsonEncoderOf
-  implicit val bookDecoder: EntityDecoder[IO, Book] = jsonOf
+  implicit val bookEncoder: EntityEncoder[IO, Book]           = jsonEncoderOf
+  implicit val bookDecoder: EntityDecoder[IO, Book]           = jsonOf
   implicit val listBookDecoder: EntityDecoder[IO, List[Book]] = jsonOf
 
   test("Add book to Library") {
-    val bookRepo = InMemoryBookRepositoryInterpreter[IO]()
-    val bookValidation = BookValidationInterpreter[IO](bookRepo)
-    val bookService = BookService[IO](bookRepo, bookValidation)
+    val bookRepo        = InMemoryBookRepositoryInterpreter[IO]()
+    val bookValidation  = BookValidationInterpreter[IO](bookRepo)
+    val bookService     = BookService[IO](bookRepo, bookValidation)
     val bookHttpService = BookEndpoints.endpoints[IO](bookService).orNotFound
 
     forAll { book: Book =>
       (for {
-        request <- POST(book, Uri.uri("/books"))
+        request  <- POST(book, Uri.uri("/books"))
         response <- bookHttpService.run(request)
       } yield {
         response.status shouldEqual Ok
@@ -43,19 +44,19 @@ class BookEndpointsSpec
   }
 
   test("Get book from Library") {
-    val bookRepo = InMemoryBookRepositoryInterpreter[IO]()
-    val bookValidation = BookValidationInterpreter[IO](bookRepo)
-    val bookService = BookService[IO](bookRepo, bookValidation)
+    val bookRepo        = InMemoryBookRepositoryInterpreter[IO]()
+    val bookValidation  = BookValidationInterpreter[IO](bookRepo)
+    val bookService     = BookService[IO](bookRepo, bookValidation)
     val bookHttpService = BookEndpoints.endpoints[IO](bookService).orNotFound
 
     forAll { book: Book =>
       (for {
-        createRequest <- POST(book, Uri.uri("/books"))
+        createRequest  <- POST(book, Uri.uri("/books"))
         createResponse <- bookHttpService.run(createRequest)
-        createdBook <- createResponse.as[Book]
-        request <- GET(Uri.unsafeFromString(s"/books/${createdBook.isbn.getOrElse("")}"))
-        response <- bookHttpService.run(request)
-        responseBook <- response.as[Book]
+        createdBook    <- createResponse.as[Book]
+        request        <- GET(Uri.unsafeFromString(s"/books/${createdBook.isbn.getOrElse("")}"))
+        response       <- bookHttpService.run(request)
+        responseBook   <- response.as[Book]
       } yield {
         response.status shouldEqual Ok
         responseBook.title shouldEqual book.title
@@ -66,18 +67,18 @@ class BookEndpointsSpec
   }
 
   test("Get all books in Library") {
-    val bookRepo = InMemoryBookRepositoryInterpreter[IO]()
-    val bookValidation = BookValidationInterpreter[IO](bookRepo)
-    val bookService = BookService[IO](bookRepo, bookValidation)
+    val bookRepo        = InMemoryBookRepositoryInterpreter[IO]()
+    val bookValidation  = BookValidationInterpreter[IO](bookRepo)
+    val bookService     = BookService[IO](bookRepo, bookValidation)
     val bookHttpService = BookEndpoints.endpoints[IO](bookService).orNotFound
 
     forAll { book: Book =>
       (for {
         createRequest <- POST(book, Uri.uri("/books"))
-        _ <- bookHttpService.run(createRequest)
-        request <- GET(Uri.uri("/books"))
-        response <- bookHttpService.run(request)
-        responseList <- response.as[List[Book]]
+        _             <- bookHttpService.run(createRequest)
+        request       <- GET(Uri.uri("/books"))
+        response      <- bookHttpService.run(request)
+        responseList  <- response.as[List[Book]]
       } yield {
         response.status shouldEqual Ok
         assert(responseList.nonEmpty)

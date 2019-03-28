@@ -1,8 +1,8 @@
 package fr.xebia.http4s.domain.author
-import java.util.UUID
+import io.chrisdavenport.fuuid.FUUID
 
 case class Author(
-    identifier: UUID,
+    identifier: FUUID,
     firstName: String,
     lastName: String,
 )

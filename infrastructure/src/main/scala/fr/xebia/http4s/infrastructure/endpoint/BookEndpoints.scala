@@ -1,15 +1,15 @@
 package fr.xebia.http4s.infrastructure.endpoint
 
-import java.util.UUID
-
 import cats.effect.Sync
 import fr.xebia.http4s.domain.book.{Book, BookService}
 import fr.xebia.http4s.domain.{BookAlreadyExistsError, BookNotFoundError}
+import io.chrisdavenport.fuuid.http4s.FUUIDVar
 import io.circe.generic.auto._
 import io.circe.syntax._
 import org.http4s.circe._
 import org.http4s.dsl.Http4sDsl
 import org.http4s.{EntityDecoder, HttpRoutes}
+import io.chrisdavenport.fuuid.circe._
 
 import scala.language.higherKinds
 
@@ -17,13 +17,12 @@ class BookEndpoints[F[_]: Sync] extends Http4sDsl[F] {
   import cats.implicits._
 
   implicit val bookDecoder: EntityDecoder[F, Book] = jsonOf[F, Book]
-  implicit val authorDecoder: EntityDecoder[F, UUID] = jsonOf[F, UUID]
 
   private def createBookEndpoint(bookService: BookService[F]): HttpRoutes[F] =
     HttpRoutes.of[F] {
       case req @ POST -> Root / "books" =>
         val action = for {
-          book <- req.as[Book]
+          book   <- req.as[Book]
           result <- bookService.addToLibrary(book).value
         } yield result
 
@@ -37,7 +36,7 @@ class BookEndpoints[F[_]: Sync] extends Http4sDsl[F] {
 
   private def getBookEndpoint(bookService: BookService[F]) =
     HttpRoutes.of[F] {
-      case GET -> Root / "books" / UUIDVar(isbn) =>
+      case GET -> Root / "books" / FUUIDVar(isbn) =>
         bookService.getABook(isbn).value.flatMap {
           case Right(found)            => Ok(found.asJson)
           case Left(BookNotFoundError) => NotFound("The book was not found")
@@ -49,13 +48,13 @@ class BookEndpoints[F[_]: Sync] extends Http4sDsl[F] {
       case GET -> Root / "books" =>
         for {
           retrieved <- bookService.getAllBooksInLibrary
-          response <- Ok(retrieved.asJson)
+          response  <- Ok(retrieved.asJson)
         } yield response
     }
 
   private def deleteBooks(bookService: BookService[F]) =
     HttpRoutes.of[F] {
-      case DELETE -> Root / "books" / UUIDVar(isbn) =>
+      case DELETE -> Root / "books" / FUUIDVar(isbn) =>
         bookService.removeFromLibrary(isbn).value.flatMap {
           case Right(_)                => Ok()
           case Left(BookNotFoundError) => NotFound("The book was not found")
