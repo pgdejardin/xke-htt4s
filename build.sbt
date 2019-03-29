@@ -40,14 +40,21 @@ lazy val sharedSettings = Seq(
   version := "0.0.1-SNAPSHOT",
 )
 
-lazy val domain = project
+lazy val `domain-core` = project
+  .dependsOn(`domain-boundaries`)
   .settings(
-    name := "domain",
+    name := "domain-core",
+    sharedSettings,
+  )
+
+lazy val `domain-boundaries` = project
+  .settings(
+    name := "domain-boundaries",
     sharedSettings,
   )
 
 lazy val infrastructure = project
-  .dependsOn(domain)
+  .dependsOn(`domain-boundaries`)
   .settings(
     libraryDependencies ++= infraDependencies,
     name := "infrastructure",
@@ -55,8 +62,8 @@ lazy val infrastructure = project
   )
 
 lazy val root = (project in file("."))
-  .aggregate(domain, infrastructure)
-  .dependsOn(domain, infrastructure)
+  .aggregate(`domain-core`, `domain-boundaries`, infrastructure)
+  .dependsOn(`domain-core`, `domain-boundaries`, infrastructure)
   .settings(
     name := "xke-http4s",
     libraryDependencies ++= Seq(
