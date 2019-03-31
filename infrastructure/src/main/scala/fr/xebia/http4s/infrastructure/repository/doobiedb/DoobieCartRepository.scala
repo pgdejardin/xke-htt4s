@@ -9,10 +9,10 @@ import doobie._
 import doobie.implicits._
 import doobie.postgres._
 import doobie.postgres.implicits._
-import fr.xebia.http4s.domain.spi.{Cart, CartBook, CartRepository}
+import fr.xebia.http4s.domain.spi.{Cart, CartRepository}
 import io.chrisdavenport.fuuid.FUUID
-import io.chrisdavenport.fuuid.doobie.implicits._
 import io.chrisdavenport.fuuid.circe._
+import io.chrisdavenport.fuuid.doobie.implicits._
 import io.circe.Json
 import io.circe.parser._
 import org.postgresql.util.PGobject

@@ -15,8 +15,8 @@ class DiscountFromCart[F[_]](cartRepository: CartRepository[F]) extends Discount
     }
     val discountFromCart = getDiscountTypeFromPrice(total) match {
       case Percentage => Right(Discount(total, total * 10 / 100, "10% discount"))
-      case Minus      => Right(Discount(total, total - 10, "10€ discount"))
-      case PerSlice   => Right(Discount(total, total - ((total % 100) * 10), "10€ per 100€ discount"))
+      case Minus      => Right(Discount(total, 10, "10€ discount"))
+      case PerSlice   => Right(Discount(total, (total % 100) * 10, "10€ per 100€ discount"))
       case _          => Left(DiscountCannotBeApplied)
     }
     EitherT.fromEither(discountFromCart)
