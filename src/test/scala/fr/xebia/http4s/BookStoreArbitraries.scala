@@ -5,6 +5,7 @@ import cats.syntax.option._
 import fr.xebia.http4s.domain.spi.{Author, Book}
 import io.chrisdavenport.fuuid.FUUID
 import org.scalacheck.{Arbitrary, Gen}
+import org.scalacheck.Arbitrary.arbitrary
 
 trait BookStoreArbitraries {
 
@@ -19,7 +20,8 @@ trait BookStoreArbitraries {
       description <- Gen.listOfN(bookDescriptionLength, Gen.alphaStr).map(_.mkString)
       authorId = FUUID.randomFUUID[IO].unsafeRunSync()
       isbn     = FUUID.randomFUUID[IO].unsafeRunSync()
-    } yield Book(title, isbn.some, description, authorId)
+      price <- arbitrary[Double]
+    } yield Book(title, isbn.some, description, authorId, price)
   }
 
   implicit val author: Arbitrary[Author] = Arbitrary[Author] {

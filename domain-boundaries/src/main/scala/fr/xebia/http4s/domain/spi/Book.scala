@@ -6,4 +6,5 @@ case class Book(
     isbn: Option[FUUID] = None,
     description: String,
     authorId: FUUID,
+    price: Double
 )
